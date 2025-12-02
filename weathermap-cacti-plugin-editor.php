@@ -1,7 +1,7 @@
 <?php
 /*
  +-------------------------------------------------------------------------+
- | Copyright (C) 2022-2024 The Cacti Group, Inc.                           |
+ | Copyright (C) 2022-2025 The Cacti Group, Inc.                           |
  |                                                                         |
  | Based on the Original Plugin developed by Howard Jones                  |
  |                                                                         |
@@ -703,6 +703,27 @@ $weathermap_version = plugin_weathermap_numeric_version();
 								<select id='mapstyle_htmlstyle' name='mapstyle_htmlstyle'>
 									<option <?php print ($map->htmlstyle == 'overlib' ? 'selected' : '') ?> value='overlib'><?php print __('Dynamic HTML', 'flowview');?></option>
 									<option <?php print ($map->htmlstyle == 'static' ? 'selected' : '') ?> value='static'><?php print __('Static HTML', 'flowview');?></option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><?php print __('Key Style', 'weathermap');?></td>
+							<td>
+								<select id='mapstyle_keystyle' name='mapstyle_keystyle' class='ui-state-default ui-corner-all'>
+									<?php
+									$styles = array(
+										'classic'    => __('Classic', 'weathermap'),
+										'horizontal' => __('Horizontal', 'weathermap'),
+										'vertical'   => __('Vertical', 'weathermap'),
+										'inverted'   => __('Inverted', 'weathermap'),
+										'tags'       => __('Tags', 'weathermap')
+									);
+
+
+									foreach($styles as $id => $name) {
+										print "<option value='$id' " . ($map->keystyle['DEFAULT'] == $id ? 'selected':'') . '>' . $name . '</option>';
+									}
+									?>
 								</select>
 							</td>
 						</tr>

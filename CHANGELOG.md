@@ -14,6 +14,11 @@ IMPORTANT NOTE: This version only works on CACTI 1.x++!
 
 ## Changes
 
+--- develop ---
+* issue#176: Networklink under Hover-Graph can not be clicked
+* issue#180: It impossible to click on links in Weathermap due to cursor tracking
+* feature#178: Support Setting KEYSTYLE DEFAULT via the UI
+
 --- 1.3.1 ---
 * issue#141: Bug Weathermap - Map Style can't change Link Labels to Bits/Sec
 * issue#152: Dont attempt to include directories from Weathermap config files.

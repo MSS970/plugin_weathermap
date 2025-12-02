@@ -1,7 +1,7 @@
 <?php
 /*
  +-------------------------------------------------------------------------+
- | Copyright (C) 2022-2024 The Cacti Group, Inc.                           |
+ | Copyright (C) 2022-2025 The Cacti Group, Inc.                           |
  |                                                                         |
  | Based on the Original Plugin developed by Howard Jones                  |
  |                                                                         |
@@ -315,58 +315,58 @@ class WeatherMap extends WeatherMapBase {
 
 	function __construct() {
 		$this->inherit_fieldlist = array (
-			'width' => 800,
-			'height' => 600,
-			'kilo' => 1000,
-			'numscales' => array('DEFAULT' => 0),
-			'datasourceclasses' => array(),
-			'preprocessclasses' => array(),
+			'width'              => 800,
+			'height'             => 600,
+			'kilo'               => 1000,
+			'numscales'          => array('DEFAULT' => 0),
+			'datasourceclasses'  => array(),
+			'preprocessclasses'  => array(),
 			'postprocessclasses' => array(),
-			'included_files' => array(),
-			'context' => '',
-			'dumpconfig' => false,
-			'rrdtool_check' => '',
-			'background' => '',
-			'imageoutputfile' => '',
-			'imageuri' => '',
-			'htmloutputfile' => '',
-			'dataoutputfile' => '',
-			'htmlstylesheet' => '',
-			'labelstyle' => 'percent', // redundant?
-			'htmlstyle' => 'static',
-			'keystyle' => array('DEFAULT' => 'classic'),
-			'title' => 'Network Weathermap',
-			'keytext' => array('DEFAULT' => 'Traffic Load'),
-			'keyx' => array('DEFAULT' => -1),
-			'keyy' => array('DEFAULT' => -1),
-			'keyimage' => array(),
-			'keysize' => array('DEFAULT' => 400),
-			'stamptext' => 'Created: %b %d %Y %H:%M:%S',
-			'keyfont' => 4,
-			'titlefont' => 2,
-			'timefont' => 2,
-			'timex' => 0,
-			'timey' => 0,
+			'included_files'     => array(),
+			'context'            => '',
+			'dumpconfig'         => false,
+			'rrdtool_check'      => '',
+			'background'         => '',
+			'imageoutputfile'    => '',
+			'imageuri'           => '',
+			'htmloutputfile'     => '',
+			'dataoutputfile'     => '',
+			'htmlstylesheet'     => '',
+			'labelstyle'         => 'percent', // redundant?
+			'htmlstyle'          => 'static',
+			'keystyle'           => array('DEFAULT' => 'classic'),
+			'title'              => 'Network Weathermap',
+			'keytext'            => array('DEFAULT' => 'Traffic Load'),
+			'keyx'               => array('DEFAULT' => -1),
+			'keyy'               => array('DEFAULT' => -1),
+			'keyimage'           => array(),
+			'keysize'            => array('DEFAULT' => 400),
+			'stamptext'          => 'Created: %b %d %Y %H:%M:%S',
+			'keyfont'            => 4,
+			'titlefont'          => 2,
+			'timefont'           => 2,
+			'timex'              => 0,
+			'timey'              => 0,
 
-			'mintimex' => -10000,
-			'mintimey' => -10000,
-			'maxtimex' => -10000,
-			'maxtimey' => -10000,
-			'minstamptext' => 'Oldest Data: %b %d %Y %H:%M:%S',
-			'maxstamptext' => 'Newest Data: %b %d %Y %H:%M:%S',
+			'mintimex'           => -10000,
+			'mintimey'           => -10000,
+			'maxtimex'           => -10000,
+			'maxtimey'           => -10000,
+			'minstamptext'       => 'Oldest Data: %b %d %Y %H:%M:%S',
+			'maxstamptext'       => 'Newest Data: %b %d %Y %H:%M:%S',
 
-			'thumb_width' => 0,
-			'thumb_height' => 0,
-			'titlex' => -1,
-			'titley' => -1,
-			'cachefolder' => 'cached',
-			'mapcache' => '',
-			'sizedebug' => false,
-			'debugging' => false,
-			'widthmod' => false,
-			'has_includes' => false,
-			'has_overlibs' => false,
-			'name' => 'MAP'
+			'thumb_width'        => 0,
+			'thumb_height'       => 0,
+			'titlex'             => -1,
+			'titley'             => -1,
+			'cachefolder'        => 'cached',
+			'mapcache'           => '',
+			'sizedebug'          => false,
+			'debugging'          => false,
+			'widthmod'           => false,
+			'has_includes'       => false,
+			'has_overlibs'       => false,
+			'name'               => 'MAP'
 		);
 
 		$this->Reset();
@@ -3244,7 +3244,10 @@ class WeatherMap extends WeatherMapBase {
 	}
 
 	function WriteConfig($filename) {
-		$fd     = fopen($filename, 'w');
+		$fd     = false;
+		if (is_writable($filename)) {
+			$fd     = @fopen($filename, 'w');
+		}
 		$output = '';
 
 		$weathermap_version = plugin_weathermap_numeric_version();
@@ -3471,14 +3474,13 @@ class WeatherMap extends WeatherMapBase {
 			}
 
 			fwrite($fd, "\n\n# That's All Folks!\n");
-
 			fclose($fd);
+
+			return (true);
 		} else {
 			wm_warn("Couldn't open config file $filename for writing");
 			return (false);
 		}
-
-		return (true);
 	}
 
 	// pre-allocate colour slots for the colours used by the arrows
@@ -3508,9 +3510,16 @@ class WeatherMap extends WeatherMapBase {
 
 		$bgimage = null;
 
+		$this->cachefile_version = false;
 		if ($this->configfile != '') {
-			$this->cachefile_version = crc32(file_get_contents($this->configfile));
-		} else {
+			if (file_exists($this->configfile)) {
+				$this->cachefile_version = crc32(file_get_contents($this->configfile));
+			} else {
+				wm_warn('Failed to find configuration file: ' . $this->configFile);
+			}
+		}
+
+		if (empty($this->cachefile_version)) {
 			$this->cachefile_version = crc32('........');
 		}
 
